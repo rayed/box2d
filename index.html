@@ -1,13 +1,16 @@
 <html>
 <head>
 <style><!--
-		BODY {
-				background:#f1f1f1;
-		}
-		#my_canvas {
-				background:#fff;
-		}
-		--></style>
+BODY {
+background:#f1f1f1;
+}
+#my_canvas {
+background:#fff;
+}
+#my_canvas2 {
+background:#fff;
+}
+--></style>
 <title>Box2D</title>
 </head>
 
@@ -15,62 +18,69 @@
 
 
 <canvas id="my_canvas" height="480" width="640"></canvas>
+<canvas id="my_canvas2" height="480" width="640" tabindex='1'></canvas>
 
 <script src="box2d/Box2dWeb-2.1.a.3.min.js"></script>
+<script src="core.js"></script>
+<script src="render.js"></script>
+<script src="main.js"></script>
 <script>
 
-		// http://paulirish.com/2011/requestanimationframe-for-smart-animating/
-		window.requestAnimFrame = (function(){
+main.start();
+
+
+// http://paulirish.com/2011/requestanimationframe-for-smart-animating/
+window.requestAnimFrame = (function(){
 				return  window.requestAnimationFrame       || 
 				window.webkitRequestAnimationFrame || 
 				window.mozRequestAnimationFrame    || 
 				window.oRequestAnimationFrame      || 
 				window.msRequestAnimationFrame     || 
 				function(/* function */ callback, /* DOMElement */ element){
-						window.setTimeout(callback, 1000 / 60);
+				window.setTimeout(callback, 1000 / 60);
 				};
-		})();
+				})();
 
-		var canvas = document.getElementById("my_canvas");
-		var ctx = canvas.getContext('2d');
-		var x = 0;
-		var y = 0;
+var canvas = document.getElementById("my_canvas");
+var ctx = canvas.getContext('2d');
+var x = 0;
+var y = 0;
 
-		function setup() {
-				canvas.addEventListener('mousemove', function(event) {
+function setup() {
+		canvas.addEventListener('mousemove', function(event) {
 						x = event.offsetX;
 						y = event.offsetY;
 						redraw();
 						console.log('My Draw');
-				});
-		}
+						});
+}
 
-		function redraw() {
-				ctx.clearRect(0,0,640, 480);
-				ctx.fillStyle = "rgb(200,0,0)";
-				ctx.fillRect (x, y, 55, 50);
-		}
+function redraw() {
+		ctx.clearRect(0,0,640, 480);
+		ctx.fillStyle = "rgb(200,0,0)";
+		ctx.fillRect (x, y, 55, 50);
+}
 
-		setup();
+setup();
 
-		var   b2Vec2 = Box2D.Common.Math.b2Vec2
-		,  b2AABB = Box2D.Collision.b2AABB
-		,       b2BodyDef = Box2D.Dynamics.b2BodyDef
-		,       b2Body = Box2D.Dynamics.b2Body
-		,       b2FixtureDef = Box2D.Dynamics.b2FixtureDef
-		,       b2Fixture = Box2D.Dynamics.b2Fixture
-		,       b2World = Box2D.Dynamics.b2World
-		,       b2MassData = Box2D.Collision.Shapes.b2MassData
-		,       b2PolygonShape = Box2D.Collision.Shapes.b2PolygonShape
-		,       b2CircleShape = Box2D.Collision.Shapes.b2CircleShape
-		,       b2DebugDraw = Box2D.Dynamics.b2DebugDraw
-		,  b2MouseJointDef =  Box2D.Dynamics.Joints.b2MouseJointDef
-		;
+var   b2Vec2 = Box2D.Common.Math.b2Vec2
+,  b2AABB = Box2D.Collision.b2AABB
+,       b2BodyDef = Box2D.Dynamics.b2BodyDef
+,       b2Body = Box2D.Dynamics.b2Body
+,       b2FixtureDef = Box2D.Dynamics.b2FixtureDef
+,       b2Fixture = Box2D.Dynamics.b2Fixture
+,       b2World = Box2D.Dynamics.b2World
+,       b2MassData = Box2D.Collision.Shapes.b2MassData
+,       b2PolygonShape = Box2D.Collision.Shapes.b2PolygonShape
+,       b2CircleShape = Box2D.Collision.Shapes.b2CircleShape
+,       b2DebugDraw = Box2D.Dynamics.b2DebugDraw
+,  b2MouseJointDef =  Box2D.Dynamics.Joints.b2MouseJointDef
+;
 
 		world = new b2World(
-		new b2Vec2(0, 10)    // gravity vector
-		,  true                 // allow sleeping bodies
-		);
+						new b2Vec2(0, 10)    // gravity vector
+						,  true                 // allow sleeping bodies
+						);
 
 		var SCALE = 30; // 30 pixels to 1 meter
 
@@ -119,37 +129,37 @@
 				vec.Set(points[i].x, points[i].y);
 				points[i] = vec;
 		}
-		fixDef.shape = new b2PolygonShape;
-		fixDef.shape.SetAsArray(points, points.length);
-		world.CreateBody(this.bodyDef).CreateFixture(this.fixDef);
+fixDef.shape = new b2PolygonShape;
+fixDef.shape.SetAsArray(points, points.length);
+world.CreateBody(this.bodyDef).CreateFixture(this.fixDef);
 
-		//setup debug draw
-		var debugDraw = new b2DebugDraw();
-		debugDraw.SetSprite(document.getElementById("my_canvas").getContext("2d"));
-		debugDraw.SetDrawScale(SCALE);
-		debugDraw.SetFillAlpha(0.3);
-		debugDraw.SetLineThickness(1.0);
-		debugDraw.SetFlags(b2DebugDraw.e_shapeBit | b2DebugDraw.e_jointBit);
-		world.SetDebugDraw(debugDraw);
+//setup debug draw
+var debugDraw = new b2DebugDraw();
+debugDraw.SetSprite(document.getElementById("my_canvas").getContext("2d"));
+debugDraw.SetDrawScale(SCALE);
+debugDraw.SetFillAlpha(0.3);
+debugDraw.SetLineThickness(1.0);
+debugDraw.SetFlags(b2DebugDraw.e_shapeBit | b2DebugDraw.e_jointBit);
+world.SetDebugDraw(debugDraw);
 
 
-		var ang = 0;
-		function update() {
-				world.Step(
-				1 / 60   //frame-rate
-				,  10       //velocity iterations
-				,  10       //position iterations
-				);
-				world.DrawDebugData();
-				world.ClearForces();
+var ang = 0;
+function update() {
+		world.Step(
+						1 / 60   //frame-rate
+						,  10       //velocity iterations
+						,  10       //position iterations
+				  );
+		world.DrawDebugData();
+		world.ClearForces();
 
-				//stats.update();
-				requestAnimFrame(update);
-		}; 
-		update()
+		//stats.update();
+		requestAnimFrame(update);
+}; 
+update()
 
 
 		--></script>
 
-</body>
-</html>
+		</body>
+		</html>
