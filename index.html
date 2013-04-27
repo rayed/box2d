@@ -19,6 +19,8 @@ background:#fff;
 
 <canvas id="my_canvas" height="480" width="640"></canvas>
 <canvas id="my_canvas2" height="480" width="640" tabindex='1'></canvas>
+<br>
+<button onclick="hit_ball();">Hit Ball</button>
 
 <script src="box2d/Box2dWeb-2.1.a.3.min.js"></script>
 <script src="core.js"></script>
@@ -106,7 +108,8 @@ var   b2Vec2 = Box2D.Common.Math.b2Vec2
 		bodyDef.position.x = Math.random() * 25;
 		bodyDef.position.y = Math.random() * 10;
 		fixDef.shape = new b2CircleShape( Math.random() + 0.1 );
-		world.CreateBody(bodyDef).CreateFixture(fixDef);
+		var ball = world.CreateBody(bodyDef);
+		ball.CreateFixture(fixDef);
 
 		// Rect
 		bodyDef.type = b2Body.b2_dynamicBody;
@@ -145,11 +148,7 @@ world.SetDebugDraw(debugDraw);
 
 var ang = 0;
 function update() {
-		world.Step(
-						1 / 60   //frame-rate
-						,  10       //velocity iterations
-						,  10       //position iterations
-				  );
+		world.Step(1/60, 8, 3);
 		world.DrawDebugData();
 		world.ClearForces();
 
@@ -158,8 +157,17 @@ function update() {
 }; 
 update()
 
+function hit_ball()
+{
+		var degree = 30 * (Math.PI / 180);
+		var power = 10;
+		var body = ball;
 
-		--></script>
+		body.ApplyImpulse(new b2Vec2(Math.cos(degree) * power, Math.sin(degree) * power), body.GetWorldCenter());
+}
 
-		</body>
-		</html>
+
+--></script>
+
+</body>
+</html>
